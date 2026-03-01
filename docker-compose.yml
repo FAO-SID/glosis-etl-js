@@ -8,16 +8,16 @@ services:
     restart: always
     platform: linux/amd64
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-glosis}
+      POSTGRES_USER: ${POSTGRES_USER:-glosis}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-glosis}
       POSTGRES_INITDB_ARGS: "-c shared_buffers=256MB -c max_connections=200"
     ports:
       - "5442:5432"
     volumes:
       # Database persistence
       - glosis-db-data:/var/lib/postgresql/data
-      # Initialization scripts (must be copied here by the user first)
+      # Initialization scripts
       - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
       - glosis-net
@@ -25,7 +25,8 @@ services:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-glosis}" ]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 60s
 
   # ============================================================================
   # GLOSIS ETL JS Platform (Next.js)
