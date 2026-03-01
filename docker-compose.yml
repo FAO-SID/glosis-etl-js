@@ -1,0 +1,94 @@
+services:
+  # ============================================================================
+  # PostgreSQL with PostGIS (database for data injection & storage)
+  # ============================================================================
+  postgis:
+    image: postgis/postgis:17-3.5
+    container_name: glosis-db-js
+    restart: always
+    platform: linux/amd64
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: "-c shared_buffers=256MB -c max_connections=200"
+    ports:
+      - "5442:5432"
+    volumes:
+      # Database persistence
+      - glosis-db-data:/var/lib/postgresql/data
+      # Initialization scripts (must be copied here by the user first)
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - glosis-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-glosis}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # GLOSIS ETL JS Platform (Next.js)
+  # ============================================================================
+  glosis-etl-js:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: glosis-etl-js
+    restart: always
+    environment:
+      # Database connection parameters
+      DB_HOST: ${DB_HOST:-postgis}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${POSTGRES_DB:-glosis}
+      DB_USER: ${POSTGRES_USER:-glosis}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-glosis}
+    ports:
+      # Access Next.js app via port 3000
+      - "3000:3000"
+    depends_on:
+      postgis:
+        condition: service_healthy
+    networks:
+      - glosis-net
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ============================================================================
+  # Optional: pgAdmin for PostgreSQL management
+  # Activate with: docker-compose --profile admin up
+  # Access at: http://localhost:5050
+  # ============================================================================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: glosis-pgadmin-js
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@glosis.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgis
+    networks:
+      - glosis-net
+    profiles: [ "admin" ]
+
+# ============================================================================
+# VOLUMES
+# ============================================================================
+volumes:
+  glosis-db-data:
+    driver: local
+    name: glosis-db-data
+
+# ============================================================================
+# NETWORKS
+# ============================================================================
+networks:
+  glosis-net:
+    driver: bridge
+    name: glosis-net

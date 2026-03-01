@@ -1,0 +1,17 @@
+Dockerfile
+.dockerignore
+node_modules
+npm-debug.log
+README.md
+.next
+.git
+.env.local
+.env.development.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore macOS resource forks and attributes causing FAT32/exFAT errors
+._*
+**/*/._*
+.DS_Store
