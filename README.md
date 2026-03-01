@@ -8,25 +8,18 @@ This application provides tools for standardizing soil data templates, harmonizi
 
 To deploy the application and its dedicated PostgreSQL database independently, you can use the built-in `docker-compose.yml` architecture. This will spin up two linked containers: the `postgis` database (port 5442) and the `glosis-etl-js` Node.js server (port 3000).
 
-### 1. Initialize the Database Scripts
-The Docker composition requires the initial SQL schemas to configure the PostGIS container on its first run. Because these scripts are externally managed, you must secure them first.
-
-Copy the `init-scripts` active schema directory from the original GLOSIS repository into the root of this `glosis-etl-js` repository:
-```bash
-cp -r /path/to/original/glosis-etl/init-scripts ./
-```
-
-### 2. Configure Environment Variables
-Copy the provided `.env.example` into a local `.env` and modify the admin passwords if necessary:
+### 1. Configure Environment Variables
+Copy the provided `.env.example` into a local `.env` and modify the administrative passwords (if necessary):
 ```bash
 cp .env.example .env
 ```
 
-### 3. Build and Run
-With the initialization scripts and environment files in place, spin up the Docker network:
+### 2. Build and Run
+With the environment file in place, spin up the Docker network:
 ```bash
 docker-compose up -d --build
 ```
+*(Note: Because the `init-scripts` directory containing the `glosis-db_latest.sql` is tracked in this repository, the PostGIS container will automatically scaffold the latest GloSIS schemas upon first launch!)*
 
 The unified platform will now be available at [http://localhost:3000](http://localhost:3000).
 
