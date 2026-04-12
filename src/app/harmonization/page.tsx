@@ -46,8 +46,11 @@ export default function HarmonizationPage() {
 
     // Config
     const [projectName, setProjectName] = useState("My_Project");
+    const [projectNameCol, setProjectNameCol] = useState(""); // column to use for project name
     const [siteCode, setSiteCode] = useState("Site_1");
+    const [siteCodeCol, setSiteCodeCol] = useState(""); // column to use for site code
     const [dateVal, setDateVal] = useState(new Date().toISOString().split("T")[0]);
+    const [dateCol, setDateCol] = useState(""); // column to use for date
     const [plotType, setPlotType] = useState("TrialPit");
     const [horizonType, setHorizonType] = useState("Horizon");
 
@@ -250,7 +253,8 @@ export default function HarmonizationPage() {
                     config: {
                         sampleIdCol, longitudeCol: lonCol, latitudeCol: latCol,
                         upperDepthCol: topCol, lowerDepthCol: botCol, horizonCol: horCol,
-                        projectName, siteCode, date: dateVal, plotType, horizonType,
+                        projectName, projectNameCol, siteCode, siteCodeCol,
+                        date: dateVal, dateCol, plotType, horizonType,
                         propertyMappings: mappings, metadata,
                     },
                 }),
@@ -274,7 +278,7 @@ export default function HarmonizationPage() {
         } finally {
             setGenerating(false);
         }
-    }, [data, selectedProps, propMappings, sampleIdCol, lonCol, latCol, topCol, botCol, horCol, projectName, siteCode, dateVal, plotType, horizonType, metadata]);
+    }, [data, selectedProps, propMappings, sampleIdCol, lonCol, latCol, topCol, botCol, horCol, projectName, projectNameCol, siteCode, siteCodeCol, dateVal, dateCol, plotType, horizonType, metadata]);
 
     // Step navigation
     const steps: { id: Step; label: string; icon: string }[] = [
@@ -434,6 +438,83 @@ export default function HarmonizationPage() {
                             </div>
                         </div>
 
+                        {/* Project Configuration — right after Data Preview */}
+                        <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
+                            <h2 className="text-lg font-medium mb-3">Project configuration</h2>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                {/* Project Name: column selector or free text */}
+                                <div className="space-y-1.5">
+                                    <label className="block text-xs text-zinc-400">Project Name</label>
+                                    <select
+                                        value={projectNameCol}
+                                        onChange={(e) => setProjectNameCol(e.target.value)}
+                                        className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500/50 focus:outline-none">
+                                        <option value="">— type a name below —</option>
+                                        {data.headers.map((h) => <option key={h} value={h}>{h}</option>)}
+                                    </select>
+                                    {!projectNameCol && (
+                                        <input
+                                            type="text"
+                                            value={projectName}
+                                            onChange={(e) => setProjectName(e.target.value)}
+                                            placeholder="e.g. My_Project"
+                                            className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500/50 focus:outline-none" />
+                                    )}
+                                    {projectNameCol && (
+                                        <p className="text-xs text-zinc-500">Values taken from column <strong className="text-zinc-300">{projectNameCol}</strong></p>
+                                    )}
+                                </div>
+
+                                {/* Site Code: column selector or free text */}
+                                <div className="space-y-1.5">
+                                    <label className="block text-xs text-zinc-400">Site Code</label>
+                                    <select
+                                        value={siteCodeCol}
+                                        onChange={(e) => setSiteCodeCol(e.target.value)}
+                                        className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500/50 focus:outline-none">
+                                        <option value="">— type a code below —</option>
+                                        {data.headers.map((h) => <option key={h} value={h}>{h}</option>)}
+                                    </select>
+                                    {!siteCodeCol && (
+                                        <input
+                                            type="text"
+                                            value={siteCode}
+                                            onChange={(e) => setSiteCode(e.target.value)}
+                                            placeholder="e.g. Site_1"
+                                            className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500/50 focus:outline-none" />
+                                    )}
+                                    {siteCodeCol && (
+                                        <p className="text-xs text-zinc-500">Values taken from column <strong className="text-zinc-300">{siteCodeCol}</strong></p>
+                                    )}
+                                </div>
+
+                                {/* Date: column selector or date picker (default = today) */}
+                                <div className="space-y-1.5">
+                                    <label className="block text-xs text-zinc-400">Date</label>
+                                    <select
+                                        value={dateCol}
+                                        onChange={(e) => setDateCol(e.target.value)}
+                                        className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500/50 focus:outline-none">
+                                        <option value="">— pick a date below —</option>
+                                        {data.headers.map((h) => <option key={h} value={h}>{h}</option>)}
+                                    </select>
+                                    {!dateCol && (
+                                        <input
+                                            type="date"
+                                            value={dateVal}
+                                            onChange={(e) => setDateVal(e.target.value)}
+                                            className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500/50 focus:outline-none" />
+                                    )}
+                                    {dateCol && (
+                                        <p className="text-xs text-zinc-500">Values taken from column <strong className="text-zinc-300">{dateCol}</strong></p>
+                                    )}
+                                </div>
+
+                                <Select label="Plot Type" value={plotType} onChange={setPlotType} options={["TrialPit", "Borehole", "Surface"]} />
+                                <Select label="Horizon Type" value={horizonType} onChange={setHorizonType} options={["Horizon", "Layer"]} />
+                            </div>
+                        </div>
+
                         <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
                             <h2 className="text-lg font-medium mb-1">Column Mapping</h2>
                             <p className="text-sm text-zinc-500 mb-4">
@@ -465,29 +546,6 @@ export default function HarmonizationPage() {
                                         {h}
                                     </button>
                                 ))}
-                            </div>
-                        </div>
-
-                        <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-6">
-                            <h2 className="text-lg font-medium mb-3">Configuration</h2>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label className="block text-xs text-zinc-400 mb-1">Project Name</label>
-                                    <input type="text" value={projectName} onChange={(e) => setProjectName(e.target.value)}
-                                        className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500/50 focus:outline-none" />
-                                </div>
-                                <div>
-                                    <label className="block text-xs text-zinc-400 mb-1">Site Code</label>
-                                    <input type="text" value={siteCode} onChange={(e) => setSiteCode(e.target.value)}
-                                        className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500/50 focus:outline-none" />
-                                </div>
-                                <div>
-                                    <label className="block text-xs text-zinc-400 mb-1">Date</label>
-                                    <input type="date" value={dateVal} onChange={(e) => setDateVal(e.target.value)}
-                                        className="w-full px-3 py-2 bg-zinc-800 border border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500/50 focus:outline-none" />
-                                </div>
-                                <Select label="Plot Type" value={plotType} onChange={setPlotType} options={["TrialPit", "Borehole", "Surface"]} />
-                                <Select label="Horizon Type" value={horizonType} onChange={setHorizonType} options={["Horizon", "Layer"]} />
                             </div>
                         </div>
 

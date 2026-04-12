@@ -122,7 +122,9 @@ function parseSemicolonCSVLine(line: string): string[] {
 
 /** Get unique property IDs (e.g., "bulkDensityFineEarth", "pHH2O") */
 export function getUniquePropertyIds(procedures: ProcedureRow[]): string[] {
-  return [...new Set(procedures.map((p) => p.property_phys_chem_id))].sort();
+  return [...new Set(procedures.map((p) => p.property_phys_chem_id))].sort((a, b) =>
+    a.localeCompare(b, undefined, { sensitivity: "base" })
+  );
 }
 
 /** Get procedure IDs for a given property ID */

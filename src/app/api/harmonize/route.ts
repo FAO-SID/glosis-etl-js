@@ -39,8 +39,11 @@ export async function POST(request: NextRequest) {
         lowerDepthCol: string;
         horizonCol?: string;
         projectName: string;
+        projectNameCol?: string;
         siteCode: string;
+        siteCodeCol?: string;
         date: string;
+        dateCol?: string;
         plotType: string;
         horizonType: string;
         propertyMappings: PropertyMapping[];
@@ -80,15 +83,27 @@ export async function POST(request: NextRequest) {
     }
 
     // Build plot info
+    const today = new Date().toISOString().split("T")[0];
     const plots = Array.from(plotGroups.entries()).map(([key, plotRows], idx) => {
       const [lon, lat] = key.split("|");
+      // Use first row of the group for per-plot column values
+      const firstRow = plotRows[0];
+      const resolvedProjectName = config.projectNameCol
+        ? (firstRow[config.projectNameCol] || config.projectName || "Project")
+        : (config.projectName || "Project");
+      const resolvedSiteCode = config.siteCodeCol
+        ? (firstRow[config.siteCodeCol] || config.siteCode || "Site_1")
+        : (config.siteCode || "Site_1");
+      const resolvedDate = config.dateCol
+        ? parseDate(firstRow[config.dateCol] || today)
+        : parseDate(config.date || today);
       return {
-        projectName: config.projectName || "Project",
-        siteCode: config.siteCode || "Site_1",
+        projectName: resolvedProjectName,
+        siteCode: resolvedSiteCode,
         plotCode: "plot_" + (idx + 1),
         profileCode: "profile_" + (idx + 1),
         plotType: config.plotType || "TrialPit",
-        date: parseDate(config.date || new Date().toISOString()),
+        date: resolvedDate,
         longitude: parseFloat(lon) || 0,
         latitude: parseFloat(lat) || 0,
         nLayers: plotRows.length,
