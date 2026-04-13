@@ -106,7 +106,7 @@ git clone https://github.com/FAO-SID/glosis-etl-js.git
 cd glosis-etl-js
 ```
 
-### 2. Configure Environment Variables (only in production environments!)
+### 2. Configure Environment Variables (production only)
 
 ```bash
 cp .env.example .env
