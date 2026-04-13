@@ -106,21 +106,23 @@ git clone https://github.com/FAO-SID/glosis-etl-js.git
 cd glosis-etl-js
 ```
 
-### 2. Configure Environment Variables
+### 2. Configure Environment Variables (only in production environments!)
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` to customize your database credentials (defaults work out of the box):
+By default, no changes are required. The provided values are preconfigured and will work out of the box for local development.
 
 ```env
 POSTGRES_DB=glosis
 POSTGRES_USER=glosis
 POSTGRES_PASSWORD=glosis
 ```
+> **⚠️ Important**:
+> For local development or testing, do not modify the .env file.
+> Only update these values when deploying to a production environment, especially the database password.
 
-> **Warning**: Change the password in production environments!
 
 ### 3. Build and Start
 
