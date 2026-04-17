@@ -40,9 +40,10 @@ export default function DataViewerPage() {
       if (json.error) throw new Error(json.error);
 
       setData(json.data || []);
-      setPropertyColumns(json.propertyColumns || []);
+      const sortedCols = [...(json.propertyColumns || [])].sort((a, b) => a.localeCompare(b));
+      setPropertyColumns(sortedCols);
       // Auto-select first 3 properties
-      setSelectedProperties((json.propertyColumns || []).slice(0, 3));
+      setSelectedProperties(sortedCols.slice(0, 3));
       setConnected(true);
       setSelectedCodes(new Set());
     } catch (e) {
