@@ -37,6 +37,7 @@ export const QUERY_PROPERTY_DATA = `
     rpc.value, 
     opc.property_phys_chem_id, 
     opc.procedure_phys_chem_id,
+    opc.unit_of_measure_id,
     sp.code, 
     e.element_id,
     p.profile_code,

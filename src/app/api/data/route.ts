@@ -49,8 +49,11 @@ export async function GET(request: NextRequest) {
       const key = row.code;
       if (!propAgg.has(key)) propAgg.set(key, new Map());
       const propMap = propAgg.get(key)!;
-      // Append the procedure_phys_chem_id method code to the property name
-      const propId = `${row.property_phys_chem_id} (${row.procedure_phys_chem_id})`;
+      // Append the procedure_phys_chem_id method code and unit_of_measure_id to the property name
+      let propId = `${row.property_phys_chem_id} (${row.procedure_phys_chem_id})`;
+      if (row.unit_of_measure_id) {
+        propId += ` [${row.unit_of_measure_id}]`;
+      }
       if (!propMap.has(propId)) propMap.set(propId, { sum: 0, count: 0 });
       const agg = propMap.get(propId)!;
       agg.sum += parseFloat(row.value) || 0;
