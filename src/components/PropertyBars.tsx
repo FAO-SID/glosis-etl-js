@@ -62,7 +62,7 @@ export default function PropertyBars({
       <table className="w-full text-sm">
         <thead className="sticky top-0 bg-zinc-800 z-10">
           <tr>
-            <th className="text-left px-2 py-1.5 text-zinc-300 font-medium w-40">Profile / Element</th>
+            <th className="text-left px-2 py-1.5 text-zinc-300 font-medium w-64">Profile / Element (Depth)</th>
             {selectedProperties.map((prop) => (
               <th key={prop} className="text-left px-2 py-1.5 text-zinc-300 font-medium">
                 {prop}
@@ -82,8 +82,8 @@ export default function PropertyBars({
                   : "opacity-40 hover:opacity-70"
                   }`}
               >
-                <td className="px-2 py-1 font-mono text-xs text-zinc-400 truncate max-w-[10rem]" title={`${String(row.profile_code || "N/A")} / ${String(row.element_id || "N/A")}`}>
-                  {String(row.profile_code || "N/A")} / {String(row.element_id || "N/A")}
+                <td className="px-2 py-1 font-mono text-xs text-zinc-400 truncate max-w-[16rem]" title={`${String(row.profile_code || "N/A")} / ${String(row.element_id || "N/A")} [${row.upper_depth ?? "?"}-${row.lower_depth ?? "?"} cm]`}>
+                  {String(row.profile_code || "N/A")} / {String(row.element_id || "N/A")} <span className="text-zinc-600 ml-1">[{row.upper_depth ?? "?"}-{row.lower_depth ?? "?"} cm]</span>
                 </td>
                 {selectedProperties.map((prop) => {
                   const val = row[prop] as number | null;
